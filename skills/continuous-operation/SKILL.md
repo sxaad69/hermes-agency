@@ -33,6 +33,21 @@ nothing — and even then the next cycle re-scans.
 4. **Never claim "nothing to do".** If your board has no ready card for you,
    say so explicitly in the report — the CEO's generation loop will fill it
    within one cycle.
+5. **Hard concurrency cap: 3 running workers max.** The VPS is a 4GB / 2-vCPU
+   Linode. The dispatcher and board-supervisor must NEVER have more than **3
+   kanban workers running concurrently** across all boards. Spawning a 4th is
+   a doctrine violation: it thrashes the box (load avg 30+), exhausts swap,
+   and OOM-kills workers. If more ready cards exist than capacity, the surplus
+   stays `ready` and dispatches as slots free. Never "spawn everything".
+6. **No local model installs on the VPS. Ever.** Do NOT install, start, or
+   pull models for ollama / llama.cpp / local inference on the VPS — it is not
+   suitable (4GB RAM, no GPU, shared with 11+ processes). The default inference
+   backend is the configured API model (**opencode-go deepseek-flash**); it is
+   sufficient for every worker need, including "real inference" verification.
+   If a card appears to require a model that deepseek-flash cannot provide,
+   do NOT install anything locally — raise ask-the-board immediately (4h
+   default) and proceed with what deepseek-flash can do in the meantime.
+   "Real local inference" is never a valid reason to consume box resources.
 
 ## CEO generation rules
 
@@ -53,7 +68,12 @@ nothing — and even then the next cycle re-scans.
       2-4 evidence packs per scan run.
    4. **Product hardening**: tests, QA findings fixes, landing pages, copy,
       docs, accessibility, performance, security review.
-3. **Never run out of hunt.** When sprint work is done AND ideas are scored
+3. **Generate for capacity, not for emptiness.** The CEO may generate cards
+   freely, but the dispatch cap is **3 running workers** (hard). Generating
+   cards faster than 3 can run only fills the backlog — which is fine — but
+   never spawn more than 3 at once. Gate generation volume so the ready queue
+   is deep, not so all cards run simultaneously.
+4. **Never run out of hunt.** When sprint work is done AND ideas are scored
    AND discovery just returned empty, start a NEW scan with a different mode
    or angle. The radar always has companies to teardown; the internet always
    has problems to find.
@@ -63,8 +83,9 @@ nothing — and even then the next cycle re-scans.
 Every board-supervisor run (every 30m):
 
 - Auto-assign + dispatch any unassigned `ready` card (match the profile by
-  skill/roster; see `ceo`).
-- If idle capacity exists — ready+running < 3 across all boards, OR any
+  skill/roster; see `ceo`), BUT never let running workers exceed **3** — the
+  hard cap. If already at 3, do not dispatch; surplus stays ready.
+- If idle capacity exists — running < 3 AND ready cards are exhausted, OR any
   active profile has 0 cards — trigger a CEO generation pass immediately.
 - Report to Telegram: what moved, what is blocked (with asks), what was
   generated, next generation due.
@@ -80,3 +101,9 @@ Every board-supervisor run (every 30m):
 - **Evidence over vibes.** Generated cards carry stamps (stack, name, scope,
   success metric) and evidence links; research packs follow the
   `market-research` format.
+- **Inference = the API, not the box.** All LLM inference uses the configured
+  API model (opencode-go deepseek-flash). Never install/run local models
+  (ollama, llama.cpp) on the VPS — it is not suitable hardware. Any need that
+  deepseek-flash cannot cover goes to ask-the-board immediately.
+- **Cap is law.** 3 running workers max, always. The dispatcher enforces it;
+  the CEO plans for it; supervisors never override it.
