@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [report, board, digest, portfolio]
-    related_skills: [ceo, shipping-gate, ask-the-board, scrum-ops]
+    related_skills: [ceo, shipping-gate, ask-the-board, scrum-ops, continuous-operation]
 ---
 
 # Board Report
@@ -20,6 +20,29 @@ You summarize company state for the board. Concise, factual, decision-ready. Boa
 - **On demand "What's happening?"** — immediately when the board asks.
 - **Pre-gate reports** — before the shipping gate, any maturity gate, or a board meeting.
 - **Weekly portfolio** — weekly, on Telegram, longer than the daily.
+
+## Supervisor loop (never-idle doctrine)
+
+As the board supervisor you are the first line of the continuous-operation
+doctrine (`continuous-operation`). Every run — not just the daily report —
+executes this loop:
+
+1. **Scan all boards** for unassigned `ready` cards. Auto-assign each to the
+   matching profile (by skill/roster) and dispatch — never leave a ready card
+   sitting unassigned.
+2. **Check for idle capacity.** If ready+running across all boards < 3, or any
+   active profile (research, strategy, design, engineering, qa, marketing)
+   has 0 non-blocked cards, trigger a CEO generation pass immediately:
+   `kanban_create` a `sprint-planning`/generation card for the CEO, or call the
+   CEO directly, before writing the report.
+3. **Reconcile blocked cards.** Confirm each blocked card has a reason and an
+   ask-the-board options list (never a bare "needs key"). A blocked card is
+   parked; the freed worker must already be on another card — if not, flag it.
+4. **Report** what moved, what is blocked (with asks), what was generated,
+   and the next generation due.
+
+Rule: if any worker would report "nothing to do", you failed step 2. Fix the
+generation loop in the same run you detect it.
 
 ## Required sections
 
