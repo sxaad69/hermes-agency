@@ -6,19 +6,17 @@ Disaster recovery for the Hermes Agency operating system.
 
 | Data | Where | Frequency |
 |---|---|---|
-| Hermes config, state, sessions, kanban DB, cron, profiles | `sxaad69/hermes-backups` (private), zip archives | Daily 03:00 (job `backup-daily`) |
+| Hermes config, state, sessions, kanban DB, cron, profiles | `sxaad69/hermes-backups` (private), snapshot tarballs | Daily 03:00 (job `backup-daily`) |
 | Agency-ops repo (charter, skills, wiki, templates) | `sxaad69/hermes-agency` (public) | On every commit |
 | Product repos (code) | `sxaad69/{agentscope,crossstate,nomarkup}` (public) | On every merge |
 
 ## Restore a Hermes snapshot
 
 1. `git clone https://github.com/sxaad69/hermes-backups.git ~/hermes-backups`
-2. Pick the newest `backup-*.zip` (`ls -t ~/hermes-backups/backup-*.zip | head -1`).
-3. `hermes backup` snapshots are restorable with the built-in restore:
-   `hermes` → snapshot restore `LABEL` (label printed when the backup runs).
-4. If the CLI restore is unavailable, unzip the archive into `~/.hermes/`
-   (config.yaml, state.db, kanban.db, profiles/, cron/) over the broken copy,
-   then restart the gateway.
+2. Pick the newest `backup-*.tar.gz` (`ls -t ~/hermes-backups/backup-*.tar.gz | head -1`).
+3. `tar xzf <tarball>` and copy the snapshot's contents into `~/.hermes/`
+   (config.yaml, state.db, kanban.db, kanban/, profiles, cron/, auth.json,
+   gateway_state.json), then restart the gateway.
 
 ## Rebuild a product repo after data loss
 
