@@ -50,10 +50,16 @@ For each selected candidate, proceed directly to build:
 - CEO stamps the four design decisions (stack, name, scope, success metric)
   onto the sprint 0 card (`idea-pipeline` Stage 4).
 - Fan out child cards to the product squad (design, engineering, qa) on the
-  appropriate board with sprint + maturity labels.
+  appropriate board with sprint + maturity labels. **Respect the 3-worker
+  hard cap** — never create a card set expecting >3 concurrent workers.
 - Route integrations through `integration-resolution`; paid/money items and
   credential requirements go through ask-the-board (4h default) with options.
 - Keep the REAL vs DEMO matrix honest; maturity labels update as work lands.
+- **Inference = the API (opencode-go deepseek-flash).** Never stamp a card
+  that calls for installing/running local models (ollama/llama.cpp) on the
+  VPS — it is not suitable hardware and local inference is banned. If a build
+  truly needs a stronger model, the card must say "ask-the-board for a model
+  upgrade" instead of "run a local model".
 
 ### 4. Cycle close
 

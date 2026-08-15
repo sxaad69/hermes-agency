@@ -27,22 +27,28 @@ As the board supervisor you are the first line of the continuous-operation
 doctrine (`continuous-operation`). Every run — not just the daily report —
 executes this loop:
 
-1. **Scan all boards** for unassigned `ready` cards. Auto-assign each to the
+1. **Enforce the 3-worker cap.** Count running workers across ALL boards.
+   If running >= 3, do NOT dispatch or promote anything this run — report
+   slots full. Surplus ready/scheduled cards wait.
+2. **Scan all boards** for unassigned `ready` cards. Auto-assign each to the
    matching profile (by skill/roster) and dispatch — never leave a ready card
-   sitting unassigned.
-2. **Check for idle capacity.** If ready+running across all boards < 3, or any
-   active profile (research, strategy, design, engineering, qa, marketing)
-   has 0 non-blocked cards, trigger a CEO generation pass immediately:
-   `kanban_create` a `sprint-planning`/generation card for the CEO, or call the
-   CEO directly, before writing the report.
-3. **Reconcile blocked cards.** Confirm each blocked card has a reason and an
+   sitting unassigned — but only while running < 3 (step 1).
+3. **Check for idle capacity.** If running < 3 AND ready cards are exhausted,
+   promote parked `scheduled` cards back to `ready` first (they are queued
+   work, higher priority than new generation); if any active profile
+   (research, strategy, design, engineering, qa, marketing) has 0 non-blocked
+   cards, trigger a CEO generation pass immediately: `kanban_create` a
+   `sprint-planning`/generation card for the CEO, or call the CEO directly,
+   before writing the report.
+4. **Reconcile blocked cards.** Confirm each blocked card has a reason and an
    ask-the-board options list (never a bare "needs key"). A blocked card is
    parked; the freed worker must already be on another card — if not, flag it.
-4. **Report** what moved, what is blocked (with asks), what was generated,
+5. **Report** what moved, what is blocked (with asks), what was generated,
    and the next generation due.
 
-Rule: if any worker would report "nothing to do", you failed step 2. Fix the
-generation loop in the same run you detect it.
+Rule: if any worker would report "nothing to do", you failed step 3. Fix the
+generation loop in the same run you detect it. Rule: never exceed 3 running
+workers — the cap is law (continuous-operation doctrine).
 
 ## Required sections
 
