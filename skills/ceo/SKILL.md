@@ -98,6 +98,26 @@ If not satisfied → `kanban_comment` the gap, `kanban_request_changes` with a
 specific reason. Do not rubber-stamp. Rubber-stamping is how demos get called
 products.
 
+## Review-verdict triage (MANDATORY, never skipped)
+
+Every review verdict (product, QA, peer-review) produces findings — P1/P2/P3 or
+CHANGES-REQUESTED items. The CEO MUST triage them **in the same session the
+verdict lands**, before any other work:
+
+1. **P1 / blockers** → create a fix card immediately, assign the correct lane
+   (engineering for code, music for audio, assets for art, etc.). Lanes are
+   decided by the WORK TYPE, not by who reported it.
+2. **P2** → create a fix card with priority, or make an explicit defer decision
+   (and comment it on the review card).
+3. **P3 / nits** → decide NOW: fix / defer / kill. If fix → create the card.
+   If defer/kill → comment the decision on the review card so it is on record.
+4. **No finding sits unanswered.** A verdict with no triage comment = the CEO
+   failed. The board must never have to route work that a verdict already
+   identified.
+
+This is the CEO's job, not the board's. If the board is routing findings, the
+CEO is not executing.
+
 ## Escalation rules
 
 Decide internally when you have the information; ask the board when the decision
